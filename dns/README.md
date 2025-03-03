@@ -1,4 +1,4 @@
-# HA Pihole with Unbound as resolver
+# HA Pihole with Unbound as Nonforwarding Recursive DNS Resolver
 
 ## Update root.hints file in Unbound
 
