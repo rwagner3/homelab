@@ -1,0 +1,54 @@
+services:
+  pihole:
+    image: pihole/pihole:${PIHOLE_VERSION:-2024.07.0}
+    container_name: pihole
+    network_mode: "host"
+    environment:
+      TZ: "America/New_York"
+      WEBPASSWORD: "pihole"
+      DNSMASQ_LISTENING: "all"
+      PIHOLE_DNS_: "127.0.0.1#5335" # Forward DNS to Unbound
+      PIHOLE_WEBPORT: "8010"
+      VIRTUAL_HOST: "10.2.1.20" # keepalived VIP
+      PUID: "99"
+      PGID: "100"
+      SKIPGRAVITYONBOOT: 1
+    volumes:
+      - "/mnt/cache/docker-compose-data/pihole/etc-pihole/:/etc/pihole/"
+      - "/mnt/cache/docker-compose-data/pihole/etc-dnsmasq.d/:/etc/dnsmasq.d/"
+      - "/mnt/cache/docker-compose-data/pihole/etc-lighttpd/lighttpd.conf:/etc/lighttpd/lighttpd.conf"
+      - "/mnt/cache/docker-compose-data/pihole/etc-cron.d:/etc/cron.d"      
+    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
+
+  unbound:
+    image: mvance/unbound:${UNBOUND_VERSION:-1.22.0}
+    container_name: unbound
+    network_mode: "host"
+    volumes:
+      - "/mnt/cache/docker-compose-data/unbound/etc-unbound/unbound.conf:/etc/unbound/unbound.conf" # Main config
+      - "/mnt/cache/docker-compose-data/unbound/etc-unbound/root.hints:/opt/unbound/etc/unbound/root.hints" # Root hints file in chroot directory
+      - "/mnt/cache/docker-compose-data/unbound/var/log/unbound/unbound.log:/opt/unbound/etc/unbound/unbound.log" # Logs in chroot directory
+    restart: unless-stopped
+    ulimits:
+      nofile:
+        soft: 90456
+        hard: 90456
+    command: ["unbound", "-d", "-c", "/etc/unbound/unbound.conf"] # Explicitly set config file
+
+  keepalived:
+    image: osixia/keepalived:${KEEPALIVED_VERSION:-2.0.20}
+    container_name: keepalived
+    network_mode: "host" # Required for VIPs
+    environment:
+      KEEPALIVED_VIRTUAL_IPS: "10.2.1.20/24" # Replace with your desired virtual IP and subnet
+      KEEPALIVED_INTERFACE: "br0"
+      KEEPALIVED_PASS: "secret" # Shared password for keepalived authentication
+    volumes:
+      - "/mnt/cache/docker-compose-data/keepalived/keepalived.conf:/etc/keepalived/keepalived.conf"
+      - /etc/localtime:/etc/localtime:ro
+    cap_add:
+      - NET_ADMIN
+      - SYS_ADMIN
+    restart: unless-stopped
