@@ -20,6 +20,9 @@ Gives you a... homepage, for all your containers and services. All yaml driven a
   - Plex: I bought a lifetime pass a long time back, which has kept me locked in with Plex. I've heard good things about other Media players, but this works for me
   - Pinchflat: Youtube channel scraper
 
+- Home Assistant: Just beginning to investigate using Home Assistant to create Home Automations
+  - Frigate NVR: Network Video Recorder that has AI detection and can be used to create automations around detections.
+
 - Odds and Ends
   - LibreChat: Centralized AI chat. Lets you use your API keys from all the major players in a single chat interface.
   - Hammond: Vehicle Expense tracking
@@ -79,10 +82,17 @@ graph TD
   - CPU: i7-8700K Intel
   - MB: Z370-Plus Asus
   - Mem: 32 GB Mem
+  - NIC: 2.5 Gbit/s
   - HBA: LSI SAS2008 PCI-Express Fusion-MPT SAS-2, 8 ports
   - HDD: 5x 16TB Seagate Exos X18
   - NVMe:
     - appdata on 1TB Samsung EVO Plus
     - download cache and Immich files on 2TB Samsung EVO Plus
- 
-- Couple Raspberry Pi 3B's
+
+- Morefine M9S: Mostly runs Home Assistant and Frigate for now.
+  - CPU: N305
+  - Mem: 16 GB
+  - NIC: 1 Gbit/s
+  - NVMe: 512 GB
+
+- Couple Raspberry Pi 3B's: Backup pihole and frontend for Mealie in Kitchen
