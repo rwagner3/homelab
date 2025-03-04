@@ -2,6 +2,8 @@
 
 ## Containers
 
+High level overview of what containers and services I'm self hosting.
+
 - [tailscale](https://tailscale.com/): 
 This lets me connect to my servers and containers, securely from anywhere in the world. I highly recommend this VPN because of how simple it is to get setup, and is free for up to 100 devices and 3 users.
 
