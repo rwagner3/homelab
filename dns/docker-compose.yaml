@@ -1,3 +1,4 @@
+# RETIRED: Historical reference only. This configuration is not deployment-ready.
 services:
   pihole:
     image: pihole/pihole:${PIHOLE_VERSION:-2024.07.0}
@@ -5,7 +6,7 @@ services:
     network_mode: "host"
     environment:
       TZ: "America/New_York"
-      WEBPASSWORD: "pihole"
+      WEBPASSWORD: "${PIHOLE_WEBPASSWORD:?set PIHOLE_WEBPASSWORD to a non-secret test value}"
       DNSMASQ_LISTENING: "all"
       PIHOLE_DNS_: "127.0.0.1#5335" # Forward DNS to Unbound
       PIHOLE_WEBPORT: "8010"
@@ -44,7 +45,7 @@ services:
     environment:
       KEEPALIVED_VIRTUAL_IPS: "10.2.1.20/24" # Replace with your desired virtual IP and subnet
       KEEPALIVED_INTERFACE: "br0"
-      KEEPALIVED_PASS: "secret" # Shared password for keepalived authentication
+      KEEPALIVED_PASS: "${KEEPALIVED_PASSWORD:?set KEEPALIVED_PASSWORD to a non-secret test value}"
     volumes:
       - "/mnt/cache/docker-compose-data/keepalived/keepalived.conf:/etc/keepalived/keepalived.conf"
       - /etc/localtime:/etc/localtime:ro

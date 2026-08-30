@@ -1,100 +1,32 @@
 # homelab
 
-## Containers
+This repository documents a small self-hosted network built around an Unraid
+storage server, dedicated Home Assistant hardware, two Linux compute nodes, and
+a Windows workstation with WSL2. A UniFi Cloud Gateway Max routes six VLANs and
+connects two switches and two wireless access points.
 
-High level overview of what containers and services I'm self hosting.
+The current inventory was verified on 2026-08-30. See the detailed
+[network map](docs/network.md) and [host inventory](docs/inventory.md).
 
-- [tailscale](https://tailscale.com/): 
-This lets me connect to my servers and containers, securely from anywhere in the world. I highly recommend this VPN because of how simple it is to get setup, and is free for up to 100 devices and 3 users.
+## At a glance
 
-- [homepagedev](https://gethomepage.dev/):
-Gives you a... homepage, for all your containers and services. All yaml driven and very simple. It lets configure siteMonitors and widgets to test connectivity and see what the container/service is doing, at a glance.
+- GloFiber 1.2 Gbps symmetric internet through a UCG-Max
+- Tower provides storage, media, photo management, personal applications, and
+  monitoring
+- A Morefine M9S runs Home Assistant OS, Frigate, and MQTT
+- GMKtec and Clawbox provide search, automation, and distributed media work
+- Cognea provides a Windows 11 and WSL2 compute environment
+- Tailscale connects selected hosts and services without exposing them directly
+  to the public internet
 
-- Immich: Google Photos replacement
+The retired Pi-hole, Unbound, and Keepalived configuration remains under
+[`dns/`](dns/README.md) as a historical reference. It is not part of the current
+DNS path.
 
-- Arr Stack:
-  - Prowlarr: Indexer manager for Usenet and Torrents
-  - Sonarr: Find TV Shows
-  - Radarr: Find Movies
-  - SABnzbd: Usenet download client
-  - qBittorrent: Torrent download client
-    - GluetunVPN: For torrents only, I use a paid for VPN service thru this container
-  - Plex: I bought a lifetime pass a long time back, which has kept me locked in with Plex. I've heard good things about other Media players, but this works for me
-  - Pinchflat: Youtube channel scraper
+## Verification scope
 
-- Home Assistant: Just beginning to investigate using Home Assistant to create Home Automations
-  - Frigate NVR: Network Video Recorder that has AI detection and can be used to create automations around detections.
-
-- Odds and Ends
-  - LibreChat: Centralized AI chat. Lets you use your API keys from all the major players in a single chat interface.
-  - Hammond: Vehicle Expense tracking
-  - Mealie: Recipe management, includes AI webscraper to injest recipes into a local DB
-  - Beaver Habit Tracker: A basic habit tracker, so you can make sure you are exercizing or whatever
- 
-- Monitoring:
-  - UptimeKuma: Uptime monitoring and alerting for service endpoints
-  - Beszel: Lightweight, simple, centralized container monitoring
-  - Beszel-agent: Agent that connects to the beszel server, needs to be installed on each server you run containers on
-  - Scrutiny: Disk health and SMART monitoring
-  - Speedtest Tracker: Internet speed tracking and monitoring
-  - Tautulli: Analytics for Plex
- 
-- DNS:
-  - Unbound: Non-forwarding recursive DNS resolver
-  - Pihole: Network level Adblocking
-  - Keepalived: virtual IP to allow for HA Pihole
-
-## Layer 1 Network
-
-- ISP: GloFiber 1.2 Gbps bidirectional
-- Router: [Cloud Gateway Max](https://store.ui.com/us/en/category/cloud-gateways-compact/collections/cloud-gateway-max/products/ucg-max-ns?variant=ucg-max-ns)
-- PoE Switchs:
-  - [8 port Flex 2.5G PoE](https://store.ui.com/us/en/category/all-switching/products/usw-flex-2-5g-8-poe) - located in the living room closet
-  - [8 port Lite PoE](https://store.ui.com/us/en/category/all-switching/products/usw-lite-8-poe) - located in the upstairs office
-- APs:
-  - [U7 Pro Max](https://store.ui.com/us/en/category/all-wifi/products/u7-pro-max) - 2nd floor Office AP
-  - [U7 Pro](https://store.ui.com/us/en/category/wifi-flagship/products/u7-pro) - 1st floor Living Room AP
-
- ```mermaid
-graph TD
-  A["Internet<br>1.2 Gbit<br>Living Room"] -->|WAN| B["Router<br>Cloud Max 4-port 2.5 Gbit<br>Living Room"]
-  B --> D["Switch<br>PoE 8-port 2.5 Gbit<br>Living Room"]
-  B --> E["Switch<br>PoE 8-port 1 Gbit<br>Office"]
-  B --> F["2x Empty"]
-  D --> G["AP<br>U7 Pro Max<br>Upstairs"]
-  D --> H["Laptop<br>Mom 1 Gbit<br>Living Room"]
-  D --> C["Server<br>UnRAID 1 Gbit<br>Living Room"]
-  D --> I["AP<br>U7 Pro<br>Living Room"]
-  D --> J["4x Empty"]
-%%  D --> K[Empty]
-%%  D --> L[Empty]
-%%  D --> M[Empty]
-  E --> N["4x Empty"]
-%%  E --> O[Empty]
-  E --> P["Server<br>Morefine HA 1 Gbit<br>Office"]
-  E --> Q["PC<br>Son 1 Gbit<br>Office"]
-  E --> R["Arlo (gone soon)"]
-%%  E --> S[Empty]
-%%  E --> T[Empty]
-```
-
-## Hardware
-
-- [unRAID](https://unraid.net/): Just an assortment of hardware to handle most of my compute and all my storage. I love unRAID so much, because it handles nearly everything I hate about long term server ownership, OS and application management, and simplifies it.
-  - CPU: i7-8700K Intel
-  - MB: Z370-Plus Asus
-  - Mem: 32 GB Mem
-  - NIC: 2.5 Gbit/s
-  - HBA: LSI SAS2008 PCI-Express Fusion-MPT SAS-2, 8 ports
-  - HDD: 5x 16TB Seagate Exos X18
-  - NVMe:
-    - appdata on 1TB Samsung EVO Plus
-    - download cache and Immich files on 2TB Samsung EVO Plus
-
-- Morefine M9S: Mostly runs Home Assistant and Frigate for now.
-  - CPU: N305
-  - Mem: 16 GB
-  - NIC: 1 Gbit/s
-  - NVMe: 512 GB
-
-- Couple Raspberry Pi 3B's: Backup pihole and frontend for Mealie in Kitchen
+"Current" means observed active on 2026-08-30 through read-only UniFi API
+requests, SSH inventory commands, Docker status, Tailscale status, or the Home
+Assistant OS observer. The public documentation omits credentials, MAC
+addresses, public WAN details, personal endpoints, switch-port numbers, SSIDs,
+and Tailscale addresses and domains.
